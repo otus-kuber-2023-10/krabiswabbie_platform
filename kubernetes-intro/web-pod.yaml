@@ -1,0 +1,23 @@
+apiVersion: v1 # Версия API
+kind: Pod # Объект, который создаем
+metadata:
+  name: web # Название Pod
+  labels: # Метки в формате key: value
+    app: web
+spec: # Описание Pod
+  volumes: # Определение тома
+    - name: app
+      emptyDir: {}
+  initContainers: # Описание init контейнеров
+    - name: init-web # Название init контейнера
+      image: busybox:1.31.0 # Используемый образ
+      command: ['sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh'] # Команда, выполняемая init контейнером
+      volumeMounts: # Точка монтирования тома
+        - name: app
+          mountPath: /app
+  containers: # Описание контейнеров внутри Pod
+    - name: web # Название контейнера
+      image: efilin/kubernetes-intro-web # Образ для основного контейнера
+      volumeMounts: # Точка монтирования тома для основного контейнера
+        - name: app
+          mountPath: /app
